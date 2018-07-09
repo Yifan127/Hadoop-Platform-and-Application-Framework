@@ -1,0 +1,17 @@
+# load data
+show_views_file = sc.textFile("/user/cloudera/input_joining2/join2_gennum?.txt")
+show_channel_file = sc.textFile("/user/cloudera/input_joining2/join2_genchan?.txt")
+
+# transform the input RDD
+show_views = show_views_file.map(split_show_views)
+show_channel = show_channel_file.map(split_show_channel)
+
+# join
+joined_dataset = show_views.join(show_channel)
+
+# extract channel as key
+channel_views = joined_dataset.map(extract_channel_views)
+
+# sum across all channels
+channel_views.reduceByKey(sum_channel_view).collect()
+
